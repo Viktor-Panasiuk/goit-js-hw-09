@@ -1,6 +1,9 @@
 import flatpickr from "flatpickr";  
 import 'flatpickr/dist/flatpickr.min.css';
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
+import { Timer } from './timer-class';
+
+
 
 const refs = {
     dateTimePicker: document.querySelector('#datetime-picker'),
@@ -17,12 +20,27 @@ const pickrOption = {
     time_24hr: true,
     minuteIncrement: 1,
 };
-let fpDate;
-let updateTimetInterval;
 const fp = flatpickr(refs.dateTimePicker, pickrOption);
+
+let timer;
+let updateTimetInterval;
+
 
 fp.config.onClose.push(onChangeDate);
 refs.btnStart.addEventListener('click', onStartClick);
+
+function onChangeDate() {
+    const fpDate = fp.selectedDates[0];
+
+    if (fpDate < new Date()) {
+        refs.btnStart.setAttribute('disabled', true);
+        Notify.failure('Please choose a date in the future');
+        return ;
+    };
+
+    refs.btnStart.removeAttribute('disabled'); 
+    timer = new Timer(fpDate);
+}
 
 function onStartClick(event) {
     event.target.setAttribute('disabled', true);
@@ -30,59 +48,13 @@ function onStartClick(event) {
     updateTimetInterval = setInterval(updateTimer, 1000);
 }
 
-function onChangeDate() {
-    fpDate = fp.selectedDates[0];
-
-    const nowDate = new Date();
-
-    if (fpDate < nowDate) {
-        refs.btnStart.setAttribute('disabled', true);
-        Notify.failure('Please choose a date in the future');
-        return ;
-    };
-
-    refs.btnStart.removeAttribute('disabled'); 
-}
-
-const convertMs = (ms) => {
-  // Number of milliseconds per unit of time
-  const second = 1000;
-  const minute = second * 60;
-  const hour = minute * 60;
-  const day = hour * 24;
-
-  // Remaining days
-  const days = Math.floor(ms / day);
-  // Remaining hours
-  const hours = Math.floor((ms % day) / hour);
-  // Remaining minutes
-  const minutes = Math.floor(((ms % day) % hour) / minute);
-  // Remaining seconds
-  const seconds = Math.floor((((ms % day) % hour) % minute) / second);
-
-  return { days, hours, minutes, seconds };
-}
-
-const addLeadingZero = (timer) => {
-    const keys = Object.keys(timer);
-    const result = {};
-
-    for (const key of keys) {
-        result[key] = String(timer[key]).padStart(2, '0');
-    };
-
-    return result;
-}
-
 function updateTimer() {
-    const deltaTime = fpDate - (new Date());
-    if (deltaTime <= 0) {
+    if (timer.timeLeft <= 0) {
         clearInterval(updateTimetInterval);
         return;
     }
-    const timer = addLeadingZero(convertMs(deltaTime));
-    refs.dataDays.innerText = timer.days;
-    refs.dataHours.innerText = timer.hours;
-    refs.dataMinutes.innerText = timer.minutes;
-    refs.dataSeconds.innerText = timer.seconds;
+    refs.dataDays.innerText = timer.getTimeLeftObjStr().days;
+    refs.dataHours.innerText = timer.getTimeLeftObjStr().hours;
+    refs.dataMinutes.innerText = timer.getTimeLeftObjStr().minutes;
+    refs.dataSeconds.innerText = timer.getTimeLeftObjStr().seconds;
 }

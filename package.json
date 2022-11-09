@@ -1,18 +1,18 @@
 {
   "name": "goit-js-hw-09",
-  "version": "2.0.0",
+  "version": "1.0.0",
   "description": "",
-  "homepage": "https://viktor-panasiuk.github.io/goit-js-hw-09/",
+  "homepage": "https://Viktor-Panasiuk.github.io/goit-js-hw-09",
   "scripts": {
     "start": "parcel src/*.html",
     "build": "parcel build src/*.html --public-url /goit-js-hw-09/"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Viktor-Panasiuky/goit-js-hw-09.git"
+    "url": "git+https://github.com/Viktor-Panasiuk/goit-js-hw-09.git"
   },
   "keywords": [],
-  "author": "Viktor Panasjuk <vo151184pvv@gmail.com>",
+  "author": "",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/Viktor-Panasiuk/goit-js-hw-09/issues"
